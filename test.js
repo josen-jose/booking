@@ -1,12 +1,22 @@
-const raw = {
-  item1: { prop: "1" },
-  item2: { prop: "2" },
-  item3: { prop: "3" },
-};
+// const space = {
+//   date1: [50, 51, 52, 53, 54, 55, 56, 57],
+//   date2: [50, 51, 52, 53, 54, 55, 56, 57],
+//   date3: [50, 51, 52, 53, 54, 55, 56, 57],
+// };
 
-const allowed = ["item1", "item3"];
+// console.log(space.date1);
 
-const filtered = Object.fromEntries(
-  Object.entries(raw).filter(([key, val]) => allowed.includes(key))
-);
-console.log(filtered);
+// for (i=0; i<3; i++){
+//   text = 'space.date' + i;
+//   console.log([text]);
+// }
+
+for (i = 1; i < 5; i++) {
+  window["var_" + i] = +i;
+}
+
+console.log(var_1);
+console.log(var_2);
+console.log(var_3);
+console.log(var_4);
+console.log(var_5);

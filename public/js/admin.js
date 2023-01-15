@@ -1,137 +1,202 @@
 window.addEventListener("DOMContentLoaded", (event) => {
   let booking = document.getElementById("incom").innerHTML;
+  let day = document.getElementById("days").innerHTML;
   var dates = [];
+  let fdates = [];
   booking = JSON.parse(booking);
   for (i = 0; i < booking.length; i++) {
-    dates.push(booking[i].date);
+    if (day.includes(booking[i].date)) {
+      fdates.push(booking[i].date);
+    }
   }
-  console.log(dates);
+  dates = fdates.sort();
+  dates = [...new Set(dates)];
 
-  var space = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  var spaceIds = [201, 202, 205, 207, 208, 206, 210];
-  maxSpace = 2;
+  var spacecount = [0, 0, 0, 0, 0, 0, 0, 0];
+  var dayflag = [0,0,0,0,0,0,0,0,0,0,0,0];
+  var spaceIds = [50, 51, 52, 53, 54, 55, 56, 57];
 
+  maxSpace = 7;
+  var k = 0;
+  //////////////// AVAILABILITY FOR 12 DAYS ///////////////////
+  for (i = 0; i < 12; i++) {
+    window["space_" + i] = [50, 51, 52, 53, 54, 55, 56, 57];
+  }
+
+  //////////////// LISTING BOOKING ITEMS ///////////////////
+
+  for (i = 0; i < dates.length; i++) {
+    document.getElementById("title" + i).innerHTML =
+      "<h5>" + dates[i] + "</h5>";
+
+    target = "title" + i;
+
+    for (j = 0; j < booking.length; j++) {
+      if (dates[i] == booking[j].date) {
+        const ul = document.getElementById(target);
+        const li = document.createElement("li");
+        ul.append(li);
+
+        li.innerHTML =
+          "<input type=checkbox></input>" +
+          booking[j].name +
+          "<p>" +
+          booking[j].space +
+          "</p>" +
+          booking[j].time;
+        li.classList.add("list-group-item");
+        li.classList.add("d-flex");
+        li.classList.add("justify-content-between");
+        li.classList.add("align-items-center");
+        li.id = booking[j]._id;
+        li.name = booking[j]._id;
+      }
+    }
+  }
+
+  //////////////// PASSING ON ID TO INTERNAL ELEMENTS ////////////////
+
+  el = document.getElementsByTagName("input");
+  for (i = 0; i < el.length; i++) {
+    el[i].id = "cb" + el[i].parentElement.id;
+  }
+
+  el = document.getElementsByTagName("p");
+  for (i = 0; i < el.length; i++) {
+    el[i].id = "sp" + el[i].parentElement.id;
+  }
+
+  //////////////// RETRIEVEING CHECK BOX////////////////
+  booked = document.getElementsByTagName("p").length;
+  for (i = 0; i < booked; i++) {
+    if (document.getElementsByTagName("li")[i].children[1].innerText != "🚫")
+      document.getElementsByTagName("li")[i].children[0].checked = true;
+      
+  }
+
+  //////////////// REMOVING ALREADY BOOKED SPACES ////////////////
+
+  function arrayRemove(arr, value) {
+    return arr.filter(function (ele) {
+      return ele != value;
+    });
+  }
+
+  for (i = 0; i < booked; i++) {
+    if (document.getElementsByTagName("p")[i].innerText != "🚫")
+{
+     no = document.getElementsByTagName("p")[i].parentNode.parentNode.id.slice(5),
+      bkdspace = document.getElementsByTagName("li")[i].children[1].innerHTML;
+    
+ 
+      var arr = arrayRemove(window["space_" + no], bkdspace);
+      window["space_" + no] = arr
+
+}
+  }
+
+  //////////////// REASSIGNING SPACE IDS////////////////
+
+  for (i = 0; i < dates.length; i++) {
+    k = 0;
+    count = document.getElementById("title" + i).childElementCount;
+    for (j = 1; j < count; j++) {
+      if (
+        document.getElementById("title" + i).children[j].children[0].checked ==
+        true
+      ) {
+        k++;
+         dayflag[i] = 1;
+      }
+    }
+    spacecount[i] = k;
+   
+  }
+
+  //////////// ASSIGNING CLICK ACTION TO CHECKBOX /////////////
   var checkboxElems = document.querySelectorAll("input[type='checkbox']");
 
   for (var i = 0; i < checkboxElems.length; i++) {
     checkboxElems[i].addEventListener("click", displayCheck);
   }
 
-  console.log(checkboxElems.length);
+  //////////// CHECKBOX BUTTON CLICK /////////////
+  function displayCheck(e) {
+    cb = e.target.id;
+    cb = cb.slice(2);
+    sp = "sp" + cb;
+    //////////// CHECKBOX MAXIMUM PARKING PER DAY /////////////
 
+    title = e.target.parentElement.parentNode.id;
+    day = e.target.parentElement.parentNode.firstChild.innerText;
 
-  incomdata = document.getElementById("acmbook").innerHTML;
-  data = JSON.parse(incomdata);
-  console.log(data);
+    title = title.slice(5);
+
+    if (e.target.checked) {
+      if (spacecount[title] < maxSpace) {
+        if (e.target.checked) {
+          // if(spacecount[title]>0)
+          // {
+          //     k = spacecount[title];
+          // }
+          // else
+          // {
+          //   k=0;
+       
+          // }
+          k = 0;
+          ++spacecount[title];
+          var arr = window["space_" + title];
+          document.getElementById(sp).innerText = arr[k];
+          arr = arrayRemove(arr, arr[k]);
+          window["space_" + title]= arr
+          k++;
+          
+        }
+      } else {
+        alert("Maximum Parking for " + day);
+        e.target.checked = false;
+      }
+    } 
+    
+ 
+    else {
+      --spacecount[title];
+       var arr = window["space_" + title];
+     
+       cansp = document.getElementById(sp).innerText;   
+      arr = window["space_" + title];
+     
+     arr.unshift(+cansp);
+      arr = arr.sort();
+      
+      document.getElementById(sp).innerText = "🚫";
+      --k;
   
-
-  for (i=0; i<data.length; i++){
-    if(data[i].space != '🚫 '){
-  document.getElementsByName(data[i].date + data[i].name)[0].checked = true;
-   document.getElementsByName(data[i].date + data[i].name+ 'space')[0].innerText = data[i].space;
     }
-
-
-
    
   }
 
+  //////////// SUBMIT BUTTON  /////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  function displayCheck(e) {
-    let a = e.target.id[0];
-    let b = e.target.id[1];
-
-    if (e.target.checked) {
-      if (space[a] < maxSpace) {
-        document.getElementById(e.target.id + "-space").innerHTML =
-          spaceIds[space[a]];
-
-        newId = document.getElementById(e.target.id).value;
-        if (newId.includes("space")) {
-          newId = newId.slice(0, newId.length - 15);
-
-          document.getElementById(e.target.id).value =
-            newId + ',"space":"' + spaceIds[space[a]] + '"}';
-        } else {
-          document.getElementById(e.target.id).value =
-            document.getElementById(e.target.id).value +
-            ',"space":"' +
-            spaceIds[space[a]] +
-            '"}';
-        }
-        space[a] = space[a] + 1;
-      } else {
-        alert("no sufficient spaces");
-        e.target.checked = false;
-      }
-    } else {
-      document.getElementById(e.target.id + "-space").innerHTML = "space";
-      console.log(a, b);
-      if (space[a] > 0) {
-        space[a] = space[a] - 1;
+  document.getElementById("button").addEventListener("click", function () {
+    list = document.getElementsByTagName("input");
+    save = [];
+    date = new Date();
+    time = date.toUTCString();
+    for (i = 0; i < list.length - 1; i++) {
+      chbx = list[i].id;
+      id = chbx.slice(2);
+      
+      spceid = document.getElementById(chbx).nextSibling.nextSibling.id;
+      spce = document.getElementById(spceid).innerHTML;
+      if (spce) {
+        save.push({ ids: id, space: spce });
       }
     }
+    save.push({ ids: "63bf0fdbd28372d7c7176c05", space: time });
+    document.getElementById("cb").value = JSON.stringify(save);
     
-  }
+  });
 });
 
-document.getElementById("button").addEventListener("click", function () {
-  const conf = [...document.querySelectorAll(".inp")].map(
-    (e) => e.value
-  );
-  console.log(conf);
-
-  document.getElementById("data").value = conf;
-});
-
-// function checkspace(a,b) {
-
-//     var perday = [0 , 0, 0, 0, 0,0, 0, 0, 0, 0,0, 0];
-//     var checkbox = document.getElementById(a + "-" + b);
-//       if (checkbox.checked = true) {
-//         a = parseInt(a);
-//         b = parseInt(b);
-//         console.log(typeof(a));
-//          console.log(a + "-" + b);
-//       perday[a] = ++perday[a];
-//       console.log(perday[a]);
-//   if (perday[a]>1)
-//   {
-//      alert("no sufficient spaces");
-//       document.getElementById(a + "-" + b).checked = false;
-//   }
-// }
-
-// dates.forEach(function(element) {
-//  var checkbox = document.querySelectorAll('.'+ element);
-//  console.log(element, checkbox.length);
-//     checkbox.forEach(function (element) {
-//        });
-// });
-
-// var checkbox = document.querySelectorAll("i");
-// if (checkbox.checked != true) {
-// console.log(dates);
-// }
-
-//   var checkbox = document.querySelectorAll(".inp:checked");
-//     if (checkbox.checked != true) {
-//     alert("you need to be fluent in English to apply for the job");
-//   }
-// }

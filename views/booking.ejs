@@ -1,5 +1,5 @@
 <%- include("header") -%>
-      <h1 id="title">Parking Bookings for <%= username %></h1>
+      <h1 id="title">Parking Bookings for <span id= "usr"><%= username %></span></h1>
      
             <div class="set">
 
@@ -7,12 +7,13 @@
 <form action = "/booked" method ="post">
 <% for (let i=0; i<days.length; i++){ %>
   
-  <span class="d1 space"  id = <%= days[i] %> ><%= days[i] %></span>
+  <span class="d1 space"  id = <%= days[i] %> 
+    value = 'test'><%= days[i] %><br>🚫</span>
  
    <%} %> 
-    <input type="hidden" id = "email" name = "email" value = <%= username %>></input>
-  <input type="hidden" id = "ylist" name = "ylists" value ="nochange"></input>
-   <input type="hidden" id = "nlist" name = "nlists" value ="nochange"></input>
+  
+  <input type="hidden" id = "bookreqt" name ="bookreqt" value ="nochange"></input>
+ <input type="hidden" id = "dellist" name ="dellist" value ="nochange"></input>
    <br>
 <button type ="submit" id = "Update" class="book-button">Update</button>
 </form>

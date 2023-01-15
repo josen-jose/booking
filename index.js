@@ -23,14 +23,14 @@ mongoose.connect("mongodb://127.0.0.1:27017/parking", {
 
 // DATABASE SCHEMA ////////////////////////////////////////
 
-const bookingSchema = new mongoose.Schema({
-  name: String,
-  ylist: [],
-  nlist: [],
-  booking: [],
-});
+// const bookingSchema = new mongoose.Schema({
+//   name: String,
+//   ylist: [],
+//   nlist: [],
+//   booking: [],
+// });
 
-const Booking = mongoose.model("NewRequest", bookingSchema);
+// const Booking = mongoose.model("NewRequest", bookingSchema);
 
 const userSchema = {
   email: String,
@@ -43,6 +43,7 @@ const spaceSchema = new mongoose.Schema({
   name: String,
   date: String,
   space: String,
+  time: String,
 });
 
 const SpaceData = mongoose.model("SpaceData", spaceSchema);
@@ -50,60 +51,43 @@ const SpaceData = mongoose.model("SpaceData", spaceSchema);
 ///////////////////////////////////////// LOADING LOGIN PAGE ///////////////
 
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
+  SpaceData.find(
+    { _id: "63bf0fdbd28372d7c7176c05" },
+    { _id: 1, date: 1, name: 1, space: 1, time: 1 },
+    {},
+    function (err, log) {
+      if (err) {
+        console.log(err);
+      } else {
+        log = JSON.stringify(log[0].space);
+        log = log.slice(5, log.length - 8);
+        res.render("index", { login: log });
+      }
+    }
+  );
 });
 
 ///////////////////////////////////////// ADMIN PAGE ///////////////
 
 app.get("/admin", function (req, res) {
   day = getDates();
-  let requests = [];
-  let data = [];
-  let rec = [];
-  let j = 0;
+  data = [];
+  record = [];
+  var j = 0;
 
-  day.forEach((element) => {
-    Booking.find(
-      { ylist: { $elemMatch: { $regex: element, $options: "i" } } },
-      { _id: 0, name: 1, booking: 1 },
-      function (err, docs) {
-        if (err) {
-          console.log(err);
-        } else {
-          data = [];
-          space = [];
-          flag = 0;
-          for (i = 0; i < docs.length; i++) {
-            data.push(docs[i].name);
-
-            // space.push({ name: docs[i].name }, { record: docs[i].booking });
-          }
-        }
-        if (data.length != 0) {
-          requests.push({ date: element, book: data});
-        }
-        j++;
-
-        if (j == 12) {
-          reqt = JSON.stringify(requests);
-        
-          SpaceData.find({},
-            { _id: 0, date: 1, name: 1, space: 1 },
-            function (err, booked) {
-              if (err) {
-                console.log(err);
-              } else {
-                booked = JSON.stringify(booked);
-                res.render("admin", { request: reqt, record: booked });
-              }
-            }
-          );
-          
-          
-        }
+  SpaceData.find(
+    {},
+    { _id: 1, date: 1, name: 1, space: 1, time: 1 },
+    {},
+    function (err, booked) {
+      if (err) {
+        console.log(err);
+      } else {
+        booked = JSON.stringify(booked);
+        res.render("admin", { request: booked, days: day });
       }
-    );
-  });
+    }
+  );
 });
 
 ///////////////////////////////////////// LOADING BOOKING PAGE  ///////////////
@@ -113,151 +97,134 @@ app.post("/login", function (req, res) {
   const password = req.body.password;
   day = getDates();
 
+  ///////////////////////////////////////// ADMIN PAGE LOGIN  ///////////////
+  if (email == "lewis@admin.com" && password == "lewis") {
+    SpaceData.find(
+      {},
+      { _id: 1, date: 1, name: 1, space: 1, time: 1 },
+      {},
+      function (err, booked) {
+        if (err) {
+          console.log(err);
+        } else {
+          booked = JSON.stringify(booked);
+          res.render("admin", { request: booked, days: day });
+        }
+      }
+    );
+  }
 
+  ///////////////////////////////////////// LOADING USER BOOKING PAGE  ///////////////
+  else {
+    User.findOne({ email: email }, function (err, foundUser) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (foundUser) {
+          if (foundUser.password === password) {
+            ///////////////////////////////////////// FETCHING DATA ///////////////
+            day = getDates();
+            SpaceData.find(
+              { name: email },
+              { _id: 0, name: 0, __v: 0 },
+              function (err, docs) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  docs = JSON.stringify(docs);
+                  res.render("booking", {
+                    days: day,
+                    username: email,
+                    bookings: docs,
+                  });
+                }
+              }
+            );
 
-  User.findOne({ email: email }, function (err, foundUser) {
-    if (err) {
-      console.log(err);
-    } else {
-      if (foundUser) {
-        if (foundUser.password === password) {
-          ///////////////////////////////////////// FETCHING DATA ///////////////
-
-          day = getDates();
-
-          Booking.findOne({ name: email }, function (err, docs) {
-            if (err) {
-              console.log(err);
-            } else {
-              // docs.ylist.forEach((element) => {
-              //   console.log(element);
-              // });
-
-              res.render("booking", {
-                days: day,
-                username: email,
-                bookings: docs.ylist,
-                space: JSON.stringify(docs.booking),
-              });
-            }
-          });
-
-          ///////////////////////////////////////// LOADING PAGE ///////////////
+            ///////////////////////////////////////// LOADING PAGE ///////////////
+          } else {
+            res.send(
+              "<h1> Sorry wrong email or password. Please try again !</h1>"
+            );
+          }
         } else {
           res.send(
             "<h1> Sorry wrong email or password. Please try again !</h1>"
           );
         }
-      } else {
-        res.send("<h1> Sorry wrong email or password. Please try again !</h1>");
       }
-    }
-  });
+    });
+  }
 });
 
 ///////////////////////////////////////// BOOKING PAGE SUBMIT BUTTON  ///////////////
 
 app.post("/booked", function (req, res) {
-  let yeslists = req.body.ylists;
-  let nolists = req.body.nlists;
-  let usrname = req.body.email;
-  day = getDates();
+  let data = req.body.bookreqt;
+  let del = req.body.dellist;
+  data = JSON.parse(data);
+  del = JSON.parse(del);
 
-  var myquery = { name: usrname };
-  var newvalues = { $set: { ylist: yeslists, nlists: nolists } };
+  if (data.length > 0) {
+    for (i = 0; i < data.length; i++) {
+      SpaceData.findOneAndUpdate(
+        { name: data[i].name, date: data[i].date },
+        { space: data[i].space, time: data[i].time },
+        { upsert: true },
+        function (err, res) {
+          if (err) {
+            console.log(err);
+          } else {
+            // console.log("updated");
 
-  Booking.updateOne(myquery, newvalues, function (err, res) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("success");
-      // console.log(day, usrname, yeslists);
-
-      // data = {
-      //   days: day,
-      //   username: usrname,
-      //   bookings: yeslists,
-      // };
-
-      // res.redirect("booking",data);
+          }
+        }
+      );
     }
-  });
-   res.redirect("/");
+  }
+
+  console.log(del);
+  if (del.length > 0) {
+    for (i = 0; i < del.length; i++) {
+      SpaceData.findOneAndDelete(
+        { name: del[i].name, date: del[i].date },
+
+        function (err, res) {
+          if (err) {
+            console.log(err);
+          } else {
+            
+            //  console.log('deleted');
+          }
+        }
+      );
+    }
+  }
+
+  res.redirect("/");
 });
 
 //////////////////////////////////// ADMIN-UPDATE ///////////////
 
 app.post("/admin-update", function (req, res) {
-  data = "[" + req.body.data + "]";
-
+  data = req.body.data;
   data = JSON.parse(data);
-
-  SpaceData.collection.drop();
-
-  //////////// SETTING FIELD TO EMPTY ////////////
-
-  if (data.length != 0) {
-    for (i = 0; i < data.length; i++) {
-      var date = data[i].date;
-      var space = data[i].space;
-
-      var myquery = { name: data[i].book };
-
-      Booking.update(
-        myquery,
-        { $pull: { booking: { $exists: true } } },
-        function (err, res) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("db cleared");
-          }
+  for (i = 0; i < data.length; i++) {
+    SpaceData.findOneAndUpdate(
+      { _id: data[i].ids },
+      { space: data[i].space },
+      { upsert: true },
+      function (err, res) {
+        if (err) {
+          console.log(err);
+        } else {
+          // console.log("updated");
         }
-      );
-    }
+      }
+    );
   }
-
-  //////////// PUSHING BOOKING DATA INTO ARRAY ////////////
-
-  if (data.length != 0) {
-    for (i = 0; i < data.length; i++) {
-      var date = data[i].date;
-      var space = data[i].space;
-
-      var myquery = { name: data[i].book };
-
-      var b_data = '{"date":"' + date + '","space":"' + space + '"}';
-      var newvalues = { $push: { booking: b_data } };
-
-      Booking.findOneAndUpdate(
-        myquery,
-        newvalues,
-        { upsert: true },
-        function (err, res) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("sucess");
-          }
-        }
-      );
-
-      SpaceData.findOneAndUpdate(
-        { name: data[i].book, date: data[i].date },
-        { space: data[i], space },
-        { upsert: true },
-        function (err, res) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("updated");
-          }
-        }
-      );
-    }
-  }
-  res.redirect('/');
 });
+
 ///////////////////////////////////////// SERVER CODE  ///////////////
 
 app.listen(3000, function () {

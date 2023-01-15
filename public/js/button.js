@@ -1,64 +1,79 @@
 var allday = document.querySelectorAll(".space").length;
+usr = document.getElementById("usr").innerHTML;
+
+//////////// ADDING BUTTON ANIMATION FUNCTION TO ALL BUTTONS/////////
 
 for (let i = 0; i < allday; i++) {
   document.querySelectorAll(".space")[i].addEventListener("click", function () {
     var buttonid = this.id;
-
     buttonAnimation(buttonid);
   });
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
-  bookings = document.getElementById("booked").innerHTML;
-  var count = document.querySelectorAll(".space");
-  for (i = 0; i < count.length; i++) {
-    if (bookings.includes(count[i].id)) {
-      console.log(count[i].id);
-      buttonAnimation(count[i].id);
-    }
-  }
-  spaces = document.getElementById("space").innerHTML;
-  data = JSON.parse(spaces);
-  days = document.querySelectorAll(".space");
-  for (i = 0; i < data.length; i++) {
-    sam = JSON.parse(data[i]);
-    if (document.getElementById(sam.date).innerHTML.includes(sam.date)) {
-      doc = document.getElementById(sam.date).innerHTML;
-      document.getElementById(sam.date).innerHTML = doc + "<br>" + sam.space;
-    }
-  }
-for (j = 0; j < days.length; j++) {
-len = document.getElementById(days[j].id).innerHTML.length;
-if(len<=6)
-{
-  document.getElementById(days[j].id).innerHTML = document.getElementById(
-    days[j].id
-  ).innerHTML + '<br>🚫';
-}
-}
+  //////////// RELOADING ALL BOOKINGS /////////
 
+  book = document.getElementById("booked").innerHTML;
 
+  booking = JSON.parse(book);
+  console.log(booking);
+  for (i = 0; i < booking.length; i++) {
+    document.getElementById(booking[i].date).innerHTML =
+      booking[i].date + "<br>" + booking[i].space;
+    buttonRead(booking[i].date);
+  }
 });
 
 function buttonAnimation(currentKey) {
-  var activeButton = document.getElementById(currentKey);
+    var activeButton = document.getElementById(currentKey);
+  if (activeButton.classList.contains("pressed")){
+      activeButton.classList.toggle("pressed");
+  activeButton.classList.toggle("new");
+  activeButton.classList.toggle("delete");
+  }
+  else{
+  
   activeButton.classList.toggle("pressed");
-
-  // if (!document.getElementById(currentKey).innerHTML.includes("<br>🚫")) {
-  //   document.getElementById(currentKey).innerHTML =
-  //     currentKey + "<br>🚫";
-  // }
+  activeButton.classList.toggle("new");
+  }
 }
 
+function buttonRead(currentKey) {
+  var activeButton = document.getElementById(currentKey);
+  
+  activeButton.classList.toggle("pressed");
+}
+
+  //////////// PUSHING NEW REQUEST /////////
+
 document.getElementById("Update").addEventListener("click", function () {
-  var ylist = document.querySelectorAll(".pressed");
-  var ylists = [];
-  ylist.forEach((el) => {
-    ylists.push(el.id);
-  });
+  var newbook = document.querySelectorAll(".new");
+  newreq =[];
+  date = new Date();
 
-  document.getElementById("ylist").value = ylists;
+  for (i = 0; i < newbook.length; i++) {
+    data = {
+      date: newbook[i].id,
+      name: usr,
+      space: "🚫 ",
+      time: date.toUTCString(),
+    };
+    
+    newreq.push(data);
+  }
 
-  // console.log(ylists);
-  // console.log(nlists);
+
+
+  var cancel = document.querySelectorAll(".delete");
+  deletelist = [];
+  for(j=0; j<cancel.length; j++){
+    deleteit = {
+      date : cancel[j].id,
+      name : usr,
+    }
+    deletelist.push(deleteit);
+  }
+  
+  document.getElementById("bookreqt").value = JSON.stringify(newreq);
+  document.getElementById("dellist").value = JSON.stringify(deletelist);
 });
