@@ -9,6 +9,11 @@
       crossorigin="anonymous"
     />
 <style>
+  .adminnav {
+  margin: auto;
+  width: 60%;
+  padding: 5px;
+}
 .center {
   margin: auto;
   width: 60%;
@@ -16,10 +21,8 @@
   padding: 10px;
 }
 .hcenter {
-  margin: auto;
-  width: 60%;
-  
-  padding: 10px;
+  text-align: center;
+  padding: 2px;
 }
 .sb {
   margin: auto;
@@ -31,10 +34,21 @@
 </style>
 </head>
 <body>
+  <div class = "center">
   <span hidden id="incom"><%=request%></span>
   <span hidden id="days"><%=days%></span>
-    <h1 class="hcenter">Bookings Dashboard</h1>
-    <br>
+    <h1 class="hcenter">PARKING DASHBOARD<br>
+    <a class="btn btn-success btn-sm" href="#">Bookings</a>
+
+    <a class="btn btn-outline-success btn-sm" href="/user-dash">User</a>
+
+<a class="btn btn-outline-success btn-sm " href="/setting">Settings</a>
+ 
+    <a class="btn btn-outline-secondary  btn-sm " href="/logout">Logout</a>
+      </h1>
+
+</div>
+<br>
 
 
 <div class = 'center'>

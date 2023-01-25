@@ -16,11 +16,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
   book = document.getElementById("booked").innerHTML;
 
   booking = JSON.parse(book);
-  console.log(booking);
+  
   for (i = 0; i < booking.length; i++) {
-    document.getElementById(booking[i].date).innerHTML =
+  if (document.getElementById(booking[i].date)){
+    this.getElementById(booking[i].date).innerHTML =
       booking[i].date + "<br>" + booking[i].space;
-    buttonRead(booking[i].date);
+    buttonRead(booking[i].date);}
   }
 });
 

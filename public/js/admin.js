@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
   dates = [...new Set(dates)];
 
   var spacecount = [0, 0, 0, 0, 0, 0, 0, 0];
-  var dayflag = [0,0,0,0,0,0,0,0,0,0,0,0];
+  var dayflag = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   var spaceIds = [50, 51, 52, 53, 54, 55, 56, 57];
 
   maxSpace = 7;
@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         ul.append(li);
 
         li.innerHTML =
-          "<input type=checkbox></input>" +
+          "<input type=checkbox></input>" + 
           booking[j].name +
           "<p>" +
           booking[j].space +
@@ -71,7 +71,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
   for (i = 0; i < booked; i++) {
     if (document.getElementsByTagName("li")[i].children[1].innerText != "🚫")
       document.getElementsByTagName("li")[i].children[0].checked = true;
-      
   }
 
   //////////////// REMOVING ALREADY BOOKED SPACES ////////////////
@@ -83,16 +82,16 @@ window.addEventListener("DOMContentLoaded", (event) => {
   }
 
   for (i = 0; i < booked; i++) {
-    if (document.getElementsByTagName("p")[i].innerText != "🚫")
-{
-     no = document.getElementsByTagName("p")[i].parentNode.parentNode.id.slice(5),
-      bkdspace = document.getElementsByTagName("li")[i].children[1].innerHTML;
-    
- 
-      var arr = arrayRemove(window["space_" + no], bkdspace);
-      window["space_" + no] = arr
+    if (document.getElementsByTagName("p")[i].innerText != "🚫") {
+      (no = document
+        .getElementsByTagName("p")
+        [i].parentNode.parentNode.id.slice(5)),
+        (bkdspace =
+          document.getElementsByTagName("li")[i].children[1].innerHTML);
 
-}
+      var arr = arrayRemove(window["space_" + no], bkdspace);
+      window["space_" + no] = arr;
+    }
   }
 
   //////////////// REASSIGNING SPACE IDS////////////////
@@ -106,11 +105,10 @@ window.addEventListener("DOMContentLoaded", (event) => {
         true
       ) {
         k++;
-         dayflag[i] = 1;
+        dayflag[i] = 1;
       }
     }
     spacecount[i] = k;
-   
   }
 
   //////////// ASSIGNING CLICK ACTION TO CHECKBOX /////////////
@@ -142,39 +140,33 @@ window.addEventListener("DOMContentLoaded", (event) => {
           // else
           // {
           //   k=0;
-       
+
           // }
           k = 0;
           ++spacecount[title];
           var arr = window["space_" + title];
           document.getElementById(sp).innerText = arr[k];
           arr = arrayRemove(arr, arr[k]);
-          window["space_" + title]= arr
+          window["space_" + title] = arr;
           k++;
-          
         }
       } else {
         alert("Maximum Parking for " + day);
         e.target.checked = false;
       }
-    } 
-    
- 
-    else {
+    } else {
       --spacecount[title];
-       var arr = window["space_" + title];
-     
-       cansp = document.getElementById(sp).innerText;   
+      var arr = window["space_" + title];
+
+      cansp = document.getElementById(sp).innerText;
       arr = window["space_" + title];
-     
-     arr.unshift(+cansp);
+
+      arr.unshift(+cansp);
       arr = arr.sort();
-      
+
       document.getElementById(sp).innerText = "🚫";
       --k;
-  
     }
-   
   }
 
   //////////// SUBMIT BUTTON  /////////////
@@ -187,16 +179,16 @@ window.addEventListener("DOMContentLoaded", (event) => {
     for (i = 0; i < list.length - 1; i++) {
       chbx = list[i].id;
       id = chbx.slice(2);
-      
+
       spceid = document.getElementById(chbx).nextSibling.nextSibling.id;
+     
       spce = document.getElementById(spceid).innerHTML;
       if (spce) {
-        save.push({ ids: id, space: spce });
+        save.push({ ids: id,  space: spce });
       }
     }
     save.push({ ids: "63bf0fdbd28372d7c7176c05", space: time });
+    console.log(save);
     document.getElementById("cb").value = JSON.stringify(save);
-    
   });
 });
-
