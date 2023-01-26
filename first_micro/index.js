@@ -29,10 +29,10 @@ app.use(
 
 ///////////////////////////////////////// DATABASE CONFIG ///////////////
 
-const mongoURI =
-  "mongodb+srv://admin:admin@cluster0.vzyns3i.mongodb.net/parking";
+// const mongoURI =
+//   "mongodb+srv://admin:admin@cluster0.vzyns3i.mongodb.net/parking";
 
-// const mongoURI = "mongodb://127.0.0.1:27017/parking";
+const mongoURI = "mongodb://127.0.0.1:27017/parking";
 
 app.use(express.static(__dirname + "/public/"));
 mongoose.set("strictQuery", false);
@@ -398,7 +398,7 @@ else
   }
 
 
-  res.redirect("/admin");
+  res.redirect("/setting");
 });
 
 
@@ -532,7 +532,7 @@ app.post("/user-update", function (req, res) {
 
 // ///////////////////////////////////////// AUTOMATIC BOOKING TOOL ONE DAY  ///////////////
 
-schedule.scheduleJob("0 */6 * * *", () => {
+schedule.scheduleJob("0 */1 * * *", () => {
   SpaceData.findOne(
     { _id: "63d0cd9438d0c19787e099c4" },
     {},
@@ -604,3 +604,5 @@ schedule.scheduleJob("0 */6 * * *", () => {
 app.listen(3000, function () {
   console.log("Server started on port 3000");
 });
+
+module.exports = app;

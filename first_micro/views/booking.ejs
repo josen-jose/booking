@@ -1,0 +1,28 @@
+<%- include("header") -%>
+      <h1 id="title">Parking Bookings for <span id= "usr"><%= username %></span></h1>
+     
+            <div class="set">
+
+
+<form action = "/booked" method ="post">
+<% for (let i=0; i<days.length; i++){ %>
+  
+  <span class="d1 space"  id = <%= days[i] %> 
+    value = 'test'><%= days[i] %><br>🚫</span>
+ 
+   <%} %> 
+  
+  <input type="hidden" id = "bookreqt" name ="bookreqt" value ="nochange"></input>
+ <input type="hidden" id = "dellist" name ="dellist" value ="nochange"></input>
+   <br>
+<button type ="submit" id = "Update" class="book-button">Update</button>
+</form>
+
+
+   <script src="js/button.js" charset="utf-8" type='text/javascript' ></script>
+
+
+   
+    
+  <%- include("footer") -%>
+

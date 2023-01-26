@@ -1,0 +1,59 @@
+<html>
+<head>
+    <title>AECOM Parking Admin</title>
+</head>
+<body>
+  <span hidden id="incom"><%=request%></span>
+    <span hidden><%=data = JSON.parse(request)%></span>
+    <h1>Bookings Dashboard</h1>
+    <br><br>
+   
+    
+
+
+     <% for (let i=0; i<data.length; i++){ %>
+
+<!-- Date Text -->
+     <span class = "day"><%= data[i].date %> </span> <br>
+
+
+
+     <% for (let j=0; j<data[i].book.length; j++){ %>
+     <span class = <%= data[i].date %>>
+      
+      
+        <!-- onclick="checkspace('<%= i %>','<%= j %>')" -->
+
+
+
+      <input 
+        type="checkbox"  
+       class = "inp"
+       id = "<%= i %><%= j %>"
+      name  = "<%= data[i].date %><%= data[i].book[j] %>";
+        value= '{"date":"<%= data[i].date %>","book":"<%= data[i].book[j] %>","space":"🚫 "}'>
+       <%= data[i].book[j]%>
+        </input> - 
+
+<span id = "<%= i %><%= j %>-space" name = "<%= data[i].date %><%= data[i].book[j] %>space" >space</span>
+
+  
+  </span><br><%}%> 
+  <br>
+  <hr>
+  <br>
+   <%} %> 
+
+    <form action = "/admin-update" method ="post">
+<input type="hidden" id="data" name="data" value="nochange"> </input>
+
+
+  <button type ="submit" id = "button"  class="book-button">Update</button>
+  </form>
+
+<p hidden id="acmbook" > <%=record %></p>
+  
+    <script src= "/js/admin.js" charset="utf-8" type='text/javascript' ></script>
+</body>
+</html>
+
